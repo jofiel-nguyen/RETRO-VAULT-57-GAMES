@@ -638,6 +638,7 @@ function startEngine(g) {
     };
     draw();
   }
+
   // 11. BOMBER ENGINE
   else if (g.engine === "bomber") {
     hint.textContent = "Use Arrow keys / WASD to move, Space to plant a bomb!";
@@ -666,7 +667,6 @@ function startEngine(g) {
       if (keys["ArrowRight"] || keys["d"]) { player.x = Math.min(mapSize - 1, player.x + 0.1); keys["ArrowRight"] = false; }
       if (keys[" "]) { plantBomb(); keys[" "] = false; }
 
-      // Update bombs & explosions
       bombs.forEach(b => {
         b.timer--;
         if (b.timer <= 0) {
