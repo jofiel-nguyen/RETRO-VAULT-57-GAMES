@@ -90,6 +90,10 @@ const GAMES = [
   { id: 52, name: "Virus Buster", cat: "REFLEX", icon: "🦠", engine: "whack", speed: 630, color: "#39ff14", desc: "Destroy computer viruses before they spread." },
   { id: 53, name: "Hyper Pong Reflex", cat: "REFLEX", icon: "🏓", engine: "pong", speed: 7.4, color: "#ff2a85", desc: "Extreme reflex table tennis mode." },
   { id: 54, name: "Pixel Sprint 100", cat: "REFLEX", icon: "🏃", engine: "runner", speed: 7.2, color: "#00f0ff", desc: "Speed-of-light hurdle sprinting." }
+  // NEW GAMES (Bomber, Aquarium, Garden)
+  { id: 55, name: "Cyber Bomber 88", cat: "ARCADE", icon: "💣", engine: "bomber", speed: 3, color: "#ff2a85", desc: "Plant bombs to destroy cyber walls and enemies." },
+  { id: 56, name: "Neon Aquarium", cat: "CLASSIC", icon: "🐠", engine: "aquarium", speed: 1, color: "#00f0ff", desc: "Feed fish, clean the tank, and watch them swim." },
+  { id: 57, name: "Retro Garden Idle", cat: "PUZZLE", icon: "🌻", engine: "garden", speed: 1, color: "#39ff14", desc: "Plant seeds, water crops, and harvest pixel produce." }
 ];
 
 // --- APP STATE & UI RENDERING ---
