@@ -638,4 +638,202 @@ function startEngine(g) {
     };
     draw();
   }
+  // 11. BOMBER ENGINE
+  else if (g.engine === "bomber") {
+    hint.textContent = "Use Arrow keys / WASD to move, Space to plant a bomb!";
+    let player = { x: 1, y: 1 };
+    let bombs = [];
+    let enemies = [{ x: 5, y: 5, dx: 1, dy: 0 }];
+    let walls = [
+      {x:2,y:2},{x:2,y:3},{x:4,y:2},{x:4,y:4},{x:6,y:3}
+    ];
+    let explosions = [];
+    let score = 0, grid = 30, mapSize = 9;
+
+    const plantBomb = () => {
+      if (!bombs.some(b => b.x === player.x && b.y === player.y)) {
+        bombs.push({ x: player.x, y: player.y, timer: 60 });
+        Audio8Bit.blip();
+      }
+    };
+
+    canvas.onpointerdown = plantBomb;
+
+    function step() {
+      if (keys["ArrowUp"] || keys["w"]) { player.y = Math.max(0, player.y - 0.1); keys["ArrowUp"] = false; }
+      if (keys["ArrowDown"] || keys["s"]) { player.y = Math.min(mapSize - 1, player.y + 0.1); keys["ArrowDown"] = false; }
+      if (keys["ArrowLeft"] || keys["a"]) { player.x = Math.max(0, player.x - 0.1); keys["ArrowLeft"] = false; }
+      if (keys["ArrowRight"] || keys["d"]) { player.x = Math.min(mapSize - 1, player.x + 0.1); keys["ArrowRight"] = false; }
+      if (keys[" "]) { plantBomb(); keys[" "] = false; }
+
+      // Update bombs & explosions
+      bombs.forEach(b => {
+        b.timer--;
+        if (b.timer <= 0) {
+          Audio8Bit.shoot();
+          explosions.push({ x: b.x, y: b.y, life: 15 });
+          walls = walls.filter(w => Math.abs(w.x - b.x) + Math.abs(w.y - b.y) > 1);
+          enemies = enemies.filter(e => {
+            const hit = Math.abs(e.x - b.x) <= 1 && e.y === b.y || Math.abs(e.y - b.y) <= 1 && e.x === b.x;
+            if (hit) { score += 50; setScore(score); Audio8Bit.score(); }
+            return !hit;
+          });
+        }
+      });
+      bombs = bombs.filter(b => b.timer > 0);
+      explosions.forEach(ex => ex.life--);
+      explosions = explosions.filter(ex => ex.life > 0);
+
+      const hitPlayer = enemies.some(e => Math.hypot(e.x - player.x, e.y - player.y) < 0.5) ||
+                        explosions.some(ex => Math.abs(ex.x - Math.round(player.x)) <= 0 && Math.abs(ex.y - Math.round(player.y)) <= 0);
+      if (hitPlayer) {
+        Audio8Bit.over();
+        setStatus("BLOWN UP!", true);
+        return;
+      }
+
+      ctx.fillStyle = "#070811";
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "#262b4d";
+      walls.forEach(w => ctx.fillRect(w.x * grid, w.y * grid, grid - 2, grid - 2));
+
+      ctx.fillStyle = "#ffe600";
+      bombs.forEach(b => ctx.fillText("💣", b.x * grid + 4, b.y * grid + 22));
+
+      ctx.fillStyle = "#ff2a85";
+      explosions.forEach(ex => ctx.fillRect(ex.x * grid, ex.y * grid, grid, grid));
+
+      ctx.font = "22px monospace";
+      enemies.forEach(e => ctx.fillText("👾", e.x * grid + 2, e.y * grid + 22));
+      ctx.fillText("🧑‍💻", Math.round(player.x) * grid + 2, Math.round(player.y) * grid + 22);
+
+      animFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  // 12. AQUARIUM ENGINE
+  else if (g.engine === "aquarium") {
+    hint.textContent = "Click or tap the tank to drop food and feed your fish!";
+    let fishList = [
+      { x: 50, y: 100, vx: 1.2, vy: 0.2, icon: "🐠", hunger: 100 },
+      { x: 200, y: 200, vx: -1.0, vy: -0.3, icon: "🐡", hunger: 100 },
+      { x: 300, y: 150, vx: 0.8, vy: 0.4, icon: "🦐", hunger: 100 }
+    ];
+    let foods = [];
+    let score = 0;
+
+    canvas.onpointerdown = () => {
+      foods.push({ x: pointer.x, y: pointer.y });
+      Audio8Bit.blip();
+    };
+
+    function step() {
+      ctx.fillStyle = "#0a192f";
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "rgba(0, 240, 255, 0.2)";
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath();
+        ctx.arc((i * 80 + Date.now() * 0.05) % W, (H - (Date.now() * 0.08 + i * 50) % H), 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      foods.forEach(f => f.y += 1.5);
+      foods = foods.filter(f => f.y < H);
+
+      fishList.forEach(f => {
+        f.x += f.vx; f.y += f.vy;
+        if (f.x < 20 || f.x > W - 20) f.vx *= -1;
+        if (f.y < 40 || f.y > H - 40) f.vy *= -1;
+
+        foods.forEach((fd, idx) => {
+          if (Math.hypot(f.x - fd.x, f.y - fd.y) < 25) {
+            foods.splice(idx, 1);
+            score += 10;
+            setScore(score);
+            Audio8Bit.score();
+          }
+        });
+
+        ctx.font = "28px monospace";
+        ctx.save();
+        if (f.vx < 0) { ctx.translate(f.x, f.y); ctx.scale(-1, 1); ctx.fillText(f.icon, 0, 0); }
+        else { ctx.fillText(f.icon, f.x, f.y); }
+        ctx.restore();
+      });
+
+      ctx.fillStyle = "#ffe600";
+      foods.forEach(fd => { ctx.beginPath(); ctx.arc(fd.x, fd.y, 4, 0, Math.PI * 2); ctx.fill(); });
+
+      animFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  // 13. GARDEN ENGINE
+  else if (g.engine === "garden") {
+    hint.textContent = "Click a soil plot to plant seeds, water, and harvest when fully grown!";
+    let plots = [
+      { id: 0, state: 0, timer: 0 },
+      { id: 1, state: 0, timer: 0 },
+      { id: 2, state: 0, timer: 0 },
+      { id: 3, state: 0, timer: 0 }
+    ];
+    let score = 0;
+    const size = 160;
+
+    canvas.onpointerdown = () => {
+      const col = Math.floor(pointer.x / size);
+      const row = Math.floor(pointer.y / size);
+      const idx = row * 2 + col;
+      if (idx >= 0 && idx < 4) {
+        let p = plots[idx];
+        if (p.state === 0) { p.state = 1; p.timer = 120; Audio8Bit.blip(); }
+        else if (p.state === 3) {
+          p.state = 0; score += 50; setScore(score); Audio8Bit.score();
+        }
+      }
+    };
+
+    function step() {
+      ctx.fillStyle = "#0b150c";
+      ctx.fillRect(0, 0, W, H);
+
+      plots.forEach((p, i) => {
+        const c = i % 2, r = Math.floor(i / 2);
+        const x = c * size + 40, y = r * size + 60;
+
+        if (p.state > 0) {
+          p.timer--;
+          if (p.timer <= 0 && p.state < 3) { p.state++; p.timer = 120; }
+        }
+
+        ctx.fillStyle = "#3d2817";
+        ctx.fillRect(c * size + 15, r * size + 15, size - 30, size - 30);
+        ctx.strokeStyle = "#5c3a21";
+        ctx.strokeRect(c * size + 15, r * size + 15, size - 30, size - 30);
+
+        let icon = "";
+        if (p.state === 1) icon = "🌱";
+        else if (p.state === 2) icon = "🌿";
+        else if (p.state === 3) icon = "🌻";
+
+        if (icon) {
+          ctx.font = "40px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(icon, x + 40, y + 20);
+        } else {
+          ctx.font = "12px monospace";
+          ctx.fillStyle = "#8b93b8";
+          ctx.textAlign = "center";
+          ctx.fillText("Click to Plant", x + 40, y + 20);
+        }
+      });
+
+      animFrame = requestAnimationFrame(step);
+    }
+    step();
+  }
 }
