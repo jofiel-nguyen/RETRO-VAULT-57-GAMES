@@ -362,7 +362,6 @@ function startEngine(g) {
   }
 
   // 6. RUNNER ENGINE
-  // 6. RUNNER ENGINE
   else if (g.engine === "runner") {
     hint.textContent = "Press Space / Up or tap screen to jump over obstacles.";
     let y = H - 50, vy = 0, obs = [], frame = 0, score = 0;
@@ -393,7 +392,7 @@ function startEngine(g) {
       ctx.fillStyle = "#ff2a85";
       obs.forEach(o => ctx.fillRect(o.x, H - 35 - o.h, o.w, o.h));
       
-      // Lật ngang nhân vật 🦖 quay đầu sang phải (Đã xóa dòng vẽ trùng lặp phía trên)
+      // Flipped character facing right (🦖)
       ctx.save();
       ctx.font = "26px monospace";
       ctx.textAlign = "center";
@@ -406,6 +405,7 @@ function startEngine(g) {
     }
     step();
   }
+
   // 7. DODGE / COLLECT ENGINE
   else if (g.engine === "dodge") {
     hint.textContent = "Move to dodge hazards or catch falling items!";
