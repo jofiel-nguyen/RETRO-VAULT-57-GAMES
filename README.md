@@ -1,4 +1,4 @@
-# 🕹️ Retro Vault 54
+# 🕹️ Retro Vault 57
 
 > A lightweight, zero-dependency, modular retro arcade website featuring **54 classic 8-bit games** built entirely with HTML5 Canvas, CSS3, and Vanilla JavaScript. No external assets, plugins, or installations required—just open and play!
 
