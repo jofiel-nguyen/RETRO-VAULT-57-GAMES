@@ -25,7 +25,7 @@ const Audio8Bit = (() => {
   };
 })();
 
-// --- 54 RETRO GAMES CATALOG ---
+// --- 57 RETRO GAMES CATALOG ---
 const GAMES = [
   // ARCADE (12)
   { id: 1, name: "Neon Snake 1976", cat: "ARCADE", icon: "🐍", engine: "snake", speed: 110, color: "#39ff14", desc: "Classic snake with neon graphics." },
@@ -89,8 +89,9 @@ const GAMES = [
   { id: 51, name: "Quick Draw Cowboy", cat: "REFLEX", icon: "🤠", engine: "whack", speed: 550, color: "#ff9900", desc: "Hit targets fast like a Western cowboy." },
   { id: 52, name: "Virus Buster", cat: "REFLEX", icon: "🦠", engine: "whack", speed: 630, color: "#39ff14", desc: "Destroy computer viruses before they spread." },
   { id: 53, name: "Hyper Pong Reflex", cat: "REFLEX", icon: "🏓", engine: "pong", speed: 7.4, color: "#ff2a85", desc: "Extreme reflex table tennis mode." },
-  { id: 54, name: "Pixel Sprint 100", cat: "REFLEX", icon: "🏃", engine: "runner", speed: 7.2, color: "#00f0ff", desc: "Speed-of-light hurdle sprinting." }
-  // NEW GAMES (Bomber, Aquarium, Garden)
+  { id: 54, name: "Pixel Sprint 100", cat: "REFLEX", icon: "🏃", engine: "runner", speed: 7.2, color: "#00f0ff", desc: "Speed-of-light hurdle sprinting." },
+
+  // NEW ADDITIONS (55 - 57)
   { id: 55, name: "Cyber Bomber 88", cat: "ARCADE", icon: "💣", engine: "bomber", speed: 3, color: "#ff2a85", desc: "Plant bombs to destroy cyber walls and enemies." },
   { id: 56, name: "Neon Aquarium", cat: "CLASSIC", icon: "🐠", engine: "aquarium", speed: 1, color: "#00f0ff", desc: "Feed fish, clean the tank, and watch them swim." },
   { id: 57, name: "Retro Garden Idle", cat: "PUZZLE", icon: "🌻", engine: "garden", speed: 1, color: "#39ff14", desc: "Plant seeds, water crops, and harvest pixel produce." }
@@ -99,8 +100,8 @@ const GAMES = [
 // --- APP STATE & UI RENDERING ---
 let currentFilter = "ALL";
 let searchQuery = "";
-let favorites = JSON.parse(localStorage.getItem("retro54_favs") || "[]");
-let highScores = JSON.parse(localStorage.getItem("retro54_scores") || "{}");
+let favorites = JSON.parse(localStorage.getItem("retro57_favs") || "[]");
+let highScores = JSON.parse(localStorage.getItem("retro57_scores") || "{}");
 
 const gridEl = document.getElementById("gameGrid");
 const countLabel = document.getElementById("countLabel");
@@ -108,7 +109,7 @@ const countLabel = document.getElementById("countLabel");
 function saveScore(id, score) {
   if (score > (highScores[id] || 0)) {
     highScores[id] = score;
-    localStorage.setItem("retro54_scores", JSON.stringify(highScores));
+    localStorage.setItem("retro57_scores", JSON.stringify(highScores));
     renderGrid();
   }
   document.getElementById("bestVal").textContent = highScores[id] || 0;
@@ -118,7 +119,7 @@ function toggleFav(id, e) {
   e.stopPropagation();
   if (favorites.includes(id)) favorites = favorites.filter(x => x !== id);
   else favorites.push(id);
-  localStorage.setItem("retro54_favs", JSON.stringify(favorites));
+  localStorage.setItem("retro57_favs", JSON.stringify(favorites));
   Audio8Bit.blip();
   renderGrid();
 }
