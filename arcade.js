@@ -393,7 +393,13 @@ function startEngine(g) {
       obs.forEach(o => ctx.fillRect(o.x, H - 35 - o.h, o.w, o.h));
       ctx.font = "26px monospace";
       ctx.fillText(g.icon, 55, y + 12);
-
+      ctx.save();
+      ctx.font = "26px monospace";
+      ctx.textAlign = "center";
+      ctx.translate(60, y + 12); 
+      ctx.scale(-1, 1);           
+      ctx.fillText(g.icon, 0, 0);
+      ctx.restore();
       animFrame = requestAnimationFrame(step);
     }
     step();
